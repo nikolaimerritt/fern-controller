@@ -18,35 +18,21 @@ void setup() {
   Serial.begin(9600);   
   led_matrix.begin();
 
-  if (WiFi.status() == WL_NO_MODULE) {
-    Serial.println("Communication with WiFi module failed!");
-    while (true);
-  }
-
-  String fv = WiFi.firmwareVersion();
-  if (fv < WIFI_FIRMWARE_LATEST_VERSION) {
-    Serial.println("Please upgrade the firmware");
-  }
-
-  while (status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to Network named: ");
-    Serial.println(ssid);
-
-    status = WiFi.begin(ssid, pass);
-    delay(10000);
-  }
+    while (status != WL_CONNECTED) {
+        status = WiFi.begin(ssid, pass);
+        delay(10000);
+    }
     server.begin();       
     Wire.begin();
     Wire.setClock(WIRE_CLOCK);
 
-  temp_humidity_sensor.begin();                   
-  print_wifi_status();                        
+    temp_humidity_sensor.begin();                   
+    print_server_status();                        
 }
 
 
 void loop() {
-    unsigned long ms_since_arduino_started = millis();
-    unsigned long ms_since_last_read = ms_since_arduino_started - last_read_time_ms;
+    unsigned long ms_since_last_read = millis() - last_read_time_ms;
     if (last_read_time_ms == 0 || ms_since_last_read > 5000) {
         read_temperature_humidity(temperature, humidity);
         last_read_time_ms = millis();
@@ -54,21 +40,21 @@ void loop() {
 
     WiFiClient client = server.available();
     if (client) {
-        String requestLine = "";
+        String request_line = "";
         while (client.connected()) {
             if (client.available()) {
                 char c = client.read();
                 Serial.print(c);
                 if (c == '\n') {
-                    if (requestLine.length() == 0) {
+                    if (request_line.length() == 0) {
                         respond_to_client(client);
                         break;
                     } else {
                         Serial.flush();
-                        requestLine = "";
+                        request_line = "";
                     }
                 } else if (c != '\r') {
-                    requestLine += c;
+                    request_line += c;
                 }
             }
         }
@@ -76,20 +62,12 @@ void loop() {
     }
 }
 
-void print_wifi_status() {
-  Serial.print("SSID: ");
-  Serial.println(WiFi.SSID());
+void print_server_status() {
+  Serial.print("Server can be reached on WiFi ");
+  Serial.print(WiFi.SSID());
 
   IPAddress ip = WiFi.localIP();
-  Serial.print("IP Address: ");
-  Serial.println(ip);
-
-  long rssi = WiFi.RSSI();
-  Serial.print("signal strength (RSSI):");
-  Serial.print(rssi);
-  Serial.println(" dBm");
-
-  Serial.print("To see this page in action, open a browser to http://");
+  Serial.print("over HTTP at IP Address ");
   Serial.println(ip);
 }
 

@@ -28,11 +28,11 @@ const byte FRAME_OFF[8][12] = {0};
 const char* const RESPONSE_TEMPLATE = "HTTP/1.1 200 OK\n"
     "Content-type:text/html\n"
     "\n"
-    "<p> Temperature: $TC </p>"
+    "<p> Temperature: $T&deg;C </p>"
     "<p> Humidity: $H% </p>"
 ;
 
-void print_wifi_status();
+void print_server_status();
 void read_temperature_humidity(float& temperature, float& humidity);
 void respond_to_client(WiFiClient& client);
 
