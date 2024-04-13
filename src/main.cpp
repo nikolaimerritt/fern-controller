@@ -15,8 +15,8 @@ float temperature, humidity;
 unsigned long last_read_time_ms = 0;
 
 void setup() {
-  Serial.begin(9600);   
-  led_matrix.begin();
+    Serial.begin(9600);   
+    led_matrix.begin();
 
     while (status != WL_CONNECTED) {
         status = WiFi.begin(ssid, pass);
@@ -63,12 +63,12 @@ void loop() {
 }
 
 void print_server_status() {
-  Serial.print("Server can be reached on WiFi ");
-  Serial.print(WiFi.SSID());
+    Serial.print("Server can be reached on WiFi ");
+    Serial.print(WiFi.SSID());
 
-  IPAddress ip = WiFi.localIP();
-  Serial.print("over HTTP at IP Address ");
-  Serial.println(ip);
+    IPAddress ip = WiFi.localIP();
+    Serial.print(" over HTTP at IP ");
+    Serial.println(ip);
 }
 
 void read_temperature_humidity(float& temperature, float& humidity) {
@@ -80,10 +80,13 @@ void read_temperature_humidity(float& temperature, float& humidity) {
 void respond_to_client(WiFiClient& client) {
     for (int i = 0; RESPONSE_TEMPLATE[i] != '\0'; i++) {
         if (RESPONSE_TEMPLATE[i] == '$') {
-            if (RESPONSE_TEMPLATE[i + 1] == 'T') {
-                client.print(temperature);
-            } else if (RESPONSE_TEMPLATE[i + 1] == 'H') {
-                client.print(humidity);
+            switch (RESPONSE_TEMPLATE[i + 1]) {
+                case 'T':
+                    client.print(temperature);
+                    break;
+                case 'H':
+                    client.print(humidity);
+                    break;
             }
             i++;
         } else {
