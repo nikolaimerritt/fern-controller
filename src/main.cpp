@@ -17,6 +17,7 @@ unsigned long last_read_time_ms = 0;
 void setup() {
     Serial.begin(9600);   
     led_matrix.begin();
+    led_matrix.textFont(Font_4x6);
 
     while (status != WL_CONNECTED) {
         status = WiFi.begin(ssid, pass);
@@ -27,7 +28,8 @@ void setup() {
     Wire.setClock(WIRE_CLOCK);
 
     temp_humidity_sensor.begin();                   
-    print_server_status();                        
+    print_server_status();         
+    matrix_show_ip_address();               
 }
 
 
@@ -40,6 +42,7 @@ void loop() {
 
     WiFiClient client = server.available();
     if (client) {
+        Serial.print("Connected to client!");
         String request_line = "";
         while (client.connected()) {
             if (client.available()) {
@@ -66,9 +69,22 @@ void print_server_status() {
     Serial.print("Server can be reached on WiFi ");
     Serial.print(WiFi.SSID());
 
-    IPAddress ip = WiFi.localIP();
+    IPAddress const ip = WiFi.localIP();
     Serial.print(" over HTTP at IP ");
     Serial.println(ip);
+}
+
+void matrix_show_ip_address() {
+    const IPAddress ip = WiFi.localIP();
+    char last_octet_str[16] = {};
+    sprintf(last_octet_str, "%d", ip[3]);
+    matrix_print(last_octet_str);
+}
+
+void matrix_print(const char line[]) {
+    led_matrix.beginText(0, 1, 0xFFFFFF);
+    led_matrix.println(line);
+    led_matrix.endText();
 }
 
 void read_temperature_humidity(float& temperature, float& humidity) {

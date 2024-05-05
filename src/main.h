@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <Wire.h>
+#include "ArduinoGraphics.h"
 #include "Arduino_LED_Matrix.h"
 #include "arduino_secrets.h"
 #include "WiFiS3.h"
@@ -30,10 +31,14 @@ const char* const RESPONSE_TEMPLATE = "HTTP/1.1 200 OK\n"
     "\n"
     "<p> Temperature: $T&deg;C </p>"
     "<p> Humidity: $H% </p>"
+    "<br/>"
+    "<img src=\"https://i.giphy.com/THlB4bsoSA0Cc.webp\"></img>"
 ;
 
 void print_server_status();
 void read_temperature_humidity(float& temperature, float& humidity);
 void respond_to_client(WiFiClient& client);
+void matrix_show_ip_address();
+void matrix_print(const char line[]);
 
 #endif
