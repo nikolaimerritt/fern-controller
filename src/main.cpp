@@ -35,7 +35,7 @@ void setup() {
 
 void loop() {
     unsigned long ms_since_last_read = millis() - last_read_time_ms;
-    if (last_read_time_ms == 0 || ms_since_last_read > 5000) {
+    if (last_read_time_ms == 0 || ms_since_last_read > REFRESH_READINGS_MS) {
         read_temperature_humidity(temperature, humidity);
         last_read_time_ms = millis();
     }
